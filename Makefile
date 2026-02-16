@@ -1,9 +1,10 @@
 # Сборка и установка библиотек от sigal1980
 CC = gcc
 
-SOURCES = $(wildcard *.c)
-OBJECTS = load_config.o
-HEADER = $(wildcard *.h)
+SOURCES := $(wildcard *.c)
+HEADERS := $(wildcard *.h)
+OBJECTS = $(SOURCES:%.c=%.o)
+
 
 CREATE_OBJECTS_FLAGS = -c -fPIC
 CREATE_DYN_LIB_FLAGS = -shared
@@ -20,8 +21,8 @@ INC_PATH = $(HOME_PATH)/inc
 $(NAME_DYN_LIB)$(VERSION_LIB) : $(OBJECTS)
 	$(CC) $(CREATE_DYN_LIB_FLAGS) -o $(NAME_DYN_LIB)$(VERSION_LIB) $(OBJECTS)
 
-$(OBJECTS) : %.o : %.c %.h
-	$(CC) $(CREATE_OBJECTS_FLAGS) $<
+$(OBJECTS) : %.o : %.c $(HEADERS)
+	$(CC) $(CREATE_OBJECTS_FLAGS) $< -o $@
 
 .PHONY : clean install
 
@@ -32,8 +33,8 @@ install :
 	-rm $(LIB_PATH)/$(NAME_DYN_LIB)* $(LIB_PATH)/$(NAME_LINK)
 	-cp $(NAME_DYN_LIB)$(VERSION_LIB) $(LIB_PATH)
 	-ln $(LIB_PATH)/$(NAME_DYN_LIB)$(VERSION_LIB) $(LIB_PATH)/$(NAME_LINK)
-	-cp $(HEADER) $(INC_PATH)
+	-cp $(HEADERS) $(INC_PATH)
 	-cp $(SOURCES) $(SRC_PATH)
 
 clean:
-	-rm *.o $(NAME_DYN_LIB)$(VERSION_LIB)
+	-rm $(OBJECTS) $(NAME_DYN_LIB)$(VERSION_LIB)
