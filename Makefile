@@ -1,25 +1,33 @@
 # Сборка и установка библиотек от sigal1980
+#PREFIX = /usr/local
+PREFIX = ~/.local/share/sigal1980
 CC = gcc
 
-SOURCES := $(wildcard *.c)
-HEADERS := $(wildcard *.h)
+DIRS = $(shell find . -not \( -path './.*' -o -path '.' \) \
+                      -type d -name '*' -print)
+SOURCES = $(shell find . -not \( -path './.*' -o -path '.' \) \
+                         -type f -name '*.c' -print)
+
+HEADERS = $(shell find . -not \( -path './.*' -o -path '.' \) \
+                         -type f -name '*.h' -print)
 OBJECTS = $(SOURCES:%.c=%.o)
 
 
 CREATE_OBJECTS_FLAGS = -c -fPIC
 CREATE_DYN_LIB_FLAGS = -shared
 CREATE_STAT_LIB_FLAGS = -static
-NAME_DYN_LIB = libsigal.so.
-VERSION_LIB = 1.0
-NAME_LINK = libsigal.so
+BASE_NAME = libsigal
+VERSION_LIB = 1.0.0
+LINK_LIB = $(BASE_NAME).so
+NAME_LIB = $(BASE_NAME).so.$(VERSION_LIB)
 
-HOME_PATH = ~/.local/share/sigal1980
-SRC_PATH = $(HOME_PATH)/src
-LIB_PATH = $(HOME_PATH)/lib
-INC_PATH = $(HOME_PATH)/inc
+SRC_PATH = $(PREFIX)/src
+LIB_PATH = $(PREFIX)/lib
+INC_PATH = $(PREFIX)/include
 
-$(NAME_DYN_LIB)$(VERSION_LIB) : $(OBJECTS)
-	$(CC) $(CREATE_DYN_LIB_FLAGS) -o $(NAME_DYN_LIB)$(VERSION_LIB) $(OBJECTS)
+
+$(NAME_LIB) : $(OBJECTS)
+	$(CC) $(CREATE_DYN_LIB_FLAGS) -o $(NAME_LIB) $(OBJECTS)
 
 $(OBJECTS) : %.o : %.c $(HEADERS)
 	$(CC) $(CREATE_OBJECTS_FLAGS) $< -o $@
@@ -29,12 +37,9 @@ $(OBJECTS) : %.o : %.c $(HEADERS)
 install :
 	-mkdir -p $(LIB_PATH)
 	-mkdir -p $(INC_PATH)
-	-mkdir -p $(SRC_PATH)
-	-rm $(LIB_PATH)/$(NAME_DYN_LIB)* $(LIB_PATH)/$(NAME_LINK)
-	-cp $(NAME_DYN_LIB)$(VERSION_LIB) $(LIB_PATH)
-	-ln $(LIB_PATH)/$(NAME_DYN_LIB)$(VERSION_LIB) $(LIB_PATH)/$(NAME_LINK)
-	-cp $(HEADERS) $(INC_PATH)
-	-cp $(SOURCES) $(SRC_PATH)
+	install $(NAME_LIB) $(LIB_PATH)
+	install $(HEADERS) $(INC_PATH)
+	-ln -s $(LIB_PATH)/$(NAME_LIB) $(LIB_PATH)/$(LINK_LIB)
 
 clean:
-	-rm $(OBJECTS) $(NAME_DYN_LIB)$(VERSION_LIB)
+	-rm $(OBJECTS) $(NAME_LIB)
