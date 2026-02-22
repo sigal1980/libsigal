@@ -37,14 +37,14 @@
 
 #include <stdio.h>
 
-// определяем имя файла настроек
-#define FILE_NAME_CONFIG    "naname.conf"
-
 // Длина имени параметра
 #define MAX_NAME_LENGHT     50
 
 // Длина значения параметра
 #define MAX_VALUE_LENGHT    100
+
+// Макс. длина строки конфигурации
+#define MAX_CONFIG_STRING    (MAX_NAME_LENGHT + MAX_VALUE_LENGHT + 3)
 
 // Перечисление с типами настроек
 typedef enum{
@@ -54,7 +54,7 @@ typedef enum{
 
 // Объединени для хранения значений настроек
 typedef union{
-  int int_value;
+  int  int_value;
   char str_value[MAX_VALUE_LENGHT];
 } config_value_t;
 
@@ -68,14 +68,13 @@ typedef struct{
   config_value_t value;
 } config_t;
 
-// Массив с настройками. Должен быть определен в приложении до начала
-// использования модуля.
-extern config_t config[];
-
-
 //======= Функции инициализации ==========================
 
 // Загрузка файла конфигурации
 int loadConfig(const char *file_name, config_t *config, size_t size);
-
+// Разборстроки конфигурации из файла
+int parseConfigString(char * str, config_t * config, size_t size);
+// Присвает значение из файла полю структуры config_t
+int setConfigValue(char * name, char * value, config_t * config,
+                   int config_index);
 

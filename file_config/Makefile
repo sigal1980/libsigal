@@ -31,10 +31,8 @@ $(OBJECTS) : %.o : %.c $(HEADERS)
 install :
 	-mkdir -p $(LIB_PATH)
 	-mkdir -p $(INC_PATH)
-	-mkdir -p $(SRC_PATH)
 	install $(NAME_LIB) $(LIB_PATH)
 	install $(HEADERS) $(INC_PATH)
-	install $(SOURCES) $(SRC_PATH)
 	-ln -s $(LIB_PATH)/$(NAME_LIB) $(LIB_PATH)/$(LINK_LIB)
 
 clean:
